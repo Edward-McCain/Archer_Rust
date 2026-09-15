@@ -1,9 +1,11 @@
-pub mod zip_handler;
+pub mod rar_handler;
+pub mod sevenz_handler;
+pub mod single_compress_handler;
 pub mod tar_handler;
+pub mod zip_handler;
 
-pub use zip_handler::ZipArchiver;
+pub use rar_handler::RarArchiver;
+pub use sevenz_handler::SevenZArchiver;
+pub use single_compress_handler::SingleCompressArchiver;
 pub use tar_handler::TarArchiver;
-
-// TODO: sevenz_handler (крейт sevenz-rust) и rar_handler (крейт unrar,
-// только unpack/list — RAR-формат проприетарный и запись не лицензирована)
-// реализуются по тому же трейту `Archiver`, см. zip_handler.rs как образец.
+pub use zip_handler::ZipArchiver;

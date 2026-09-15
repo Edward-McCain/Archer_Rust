@@ -37,17 +37,17 @@ drag & drop, прогресс, просмотр содержимого, паро
 |--------|------|--------|--------|
 | ZIP | ✅ | ✅ | ✅ |
 | TAR / TAR.GZ / TAR.BZ2 / TAR.XZ | ✅ | ✅ | — |
-| 7Z | ⏳ | ⏳ | ⏳ |
-| RAR | — | ⏳ | ⏳ |
-| GZ / BZ2 / XZ (single) | ⏳ | ⏳ | — |
+| 7Z | ✅ | ✅ | ✅ |
+| RAR | — | ✅ | ✅ |
+| GZ / BZ2 / XZ (single) | ✅ | ✅ | — |
 
-✅ — реализовано в `archiver-core` · ⏳ — следующий этап
+✅ — реализовано в `archiver-core` · — — не применимо / не поддерживается форматом
 
 ## Этапы разработки
 
 1. ~~Структура workspace + ядро (ZIP/TAR)~~
-2. ~~Scaffold Tauri 2 + связка с `archiver-core`~~ — текущий
-3. Доработка core: 7Z, RAR, single compress
+2. ~~Scaffold Tauri 2 + связка с `archiver-core`~~
+3. ~~Доработка core: 7Z, RAR, single compress~~ — текущий
 4. Tauri-команды, progress events, ошибки
 5. UI: DnD, список файлов, прогресс, темы
 6. История, уведомления, упаковка `.app` / `.dmg`

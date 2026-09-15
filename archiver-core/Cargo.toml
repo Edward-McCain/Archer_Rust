@@ -20,8 +20,8 @@ flate2 = "1.0"
 bzip2 = "0.4"
 xz2 = "0.1"
 
-# 7z (чтение и запись)
-sevenz-rust = "0.6"
+# 7z (чтение и запись + AES)
+sevenz-rust = { version = "0.6", features = ["compress", "aes256"] }
 
 # RAR (только распаковка — формат проприетарный)
 unrar = "0.5"

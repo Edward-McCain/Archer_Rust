@@ -11,7 +11,7 @@ mod types;
 pub use error::{ArchiverError, Result};
 pub use format::ArchiveFormat;
 pub use types::{
-    Archiver, ArchiveEntry, CompressionLevel, PackOptions, ProgressCallback, ProgressEvent,
+    ArchiveEntry, Archiver, CompressionLevel, PackOptions, ProgressCallback, ProgressEvent,
     UnpackOptions,
 };
 
@@ -22,7 +22,7 @@ use std::path::Path;
 /// конкретные структуры (`ZipArchiver` и т.д.) напрямую — так формат
 /// RAR/7z можно добавить, не трогая вызывающий код.
 pub fn get_archiver(format: ArchiveFormat) -> Result<Box<dyn Archiver>> {
-    use handlers::{TarArchiver, ZipArchiver};
+    use handlers::{RarArchiver, SevenZArchiver, SingleCompressArchiver, TarArchiver, ZipArchiver};
 
     match format {
         ArchiveFormat::Zip => Ok(Box::new(ZipArchiver)),
@@ -30,15 +30,11 @@ pub fn get_archiver(format: ArchiveFormat) -> Result<Box<dyn Archiver>> {
         | ArchiveFormat::TarGz
         | ArchiveFormat::TarBz2
         | ArchiveFormat::TarXz => Ok(Box::new(TarArchiver { variant: format })),
-        ArchiveFormat::SevenZ => Err(ArchiverError::UnsupportedOperation(
-            "7z: обработчик ещё не реализован (см. handlers/mod.rs TODO)",
-        )),
-        ArchiveFormat::Rar => Err(ArchiverError::UnsupportedOperation(
-            "RAR: обработчик ещё не реализован (см. handlers/mod.rs TODO)",
-        )),
-        ArchiveFormat::Gzip | ArchiveFormat::Bzip2 | ArchiveFormat::Xz => Err(
-            ArchiverError::UnsupportedOperation("одиночные .gz/.bz2/.xz без TAR пока не поддержаны"),
-        ),
+        ArchiveFormat::SevenZ => Ok(Box::new(SevenZArchiver)),
+        ArchiveFormat::Rar => Ok(Box::new(RarArchiver)),
+        ArchiveFormat::Gzip | ArchiveFormat::Bzip2 | ArchiveFormat::Xz => {
+            Ok(Box::new(SingleCompressArchiver { variant: format }))
+        }
     }
 }
 
@@ -69,7 +65,12 @@ mod tests {
 
         let archiver = get_archiver(ArchiveFormat::Zip).unwrap();
         archiver
-            .pack(&[src_file.clone()], &archive_path, &PackOptions::default(), &mut |_| {})
+            .pack(
+                &[src_file.clone()],
+                &archive_path,
+                &PackOptions::default(),
+                &mut |_| {},
+            )
             .unwrap();
 
         assert!(archive_path.exists());
@@ -101,5 +102,98 @@ mod tests {
             ArchiveFormat::from_extension(Path::new("archive.zip")),
             Some(ArchiveFormat::Zip)
         );
+        assert_eq!(
+            ArchiveFormat::from_extension(Path::new("a.7z")),
+            Some(ArchiveFormat::SevenZ)
+        );
+    }
+
+    #[test]
+    fn sevenz_roundtrip() {
+        let dir = tempdir().unwrap();
+        let src_file = dir.path().join("note.txt");
+        std::fs::write(&src_file, b"sevenz-ok").unwrap();
+
+        let archive_path = dir.path().join("out.7z");
+        let extract_dir = dir.path().join("extracted7z");
+
+        let archiver = get_archiver(ArchiveFormat::SevenZ).unwrap();
+        archiver
+            .pack(
+                &[src_file],
+                &archive_path,
+                &PackOptions::default(),
+                &mut |_| {},
+            )
+            .unwrap();
+
+        archiver
+            .unpack(
+                &archive_path,
+                &extract_dir,
+                &UnpackOptions {
+                    overwrite: true,
+                    ..Default::default()
+                },
+                &mut |_| {},
+            )
+            .unwrap();
+
+        let entries = archiver.list(&archive_path).unwrap();
+        assert!(!entries.is_empty());
+        assert!(extract_dir.join("note.txt").exists() || extract_dir.join("note.txt").is_file()
+            || std::fs::read_to_string(extract_dir.join("note.txt")).is_ok()
+            || {
+                // sevenz may nest under relative path; search recursively
+                walkdir::WalkDir::new(&extract_dir)
+                    .into_iter()
+                    .filter_map(|e| e.ok())
+                    .any(|e| e.file_name() == "note.txt")
+            });
+    }
+
+    #[test]
+    fn gzip_single_roundtrip() {
+        let dir = tempdir().unwrap();
+        let src_file = dir.path().join("data.bin");
+        std::fs::write(&src_file, b"gzip-payload").unwrap();
+
+        let archive_path = dir.path().join("data.bin.gz");
+        let extract_dir = dir.path().join("out");
+        std::fs::create_dir_all(&extract_dir).unwrap();
+
+        let archiver = get_archiver(ArchiveFormat::Gzip).unwrap();
+        archiver
+            .pack(
+                &[src_file],
+                &archive_path,
+                &PackOptions::default(),
+                &mut |_| {},
+            )
+            .unwrap();
+
+        archiver
+            .unpack(
+                &archive_path,
+                &extract_dir,
+                &UnpackOptions {
+                    overwrite: true,
+                    ..Default::default()
+                },
+                &mut |_| {},
+            )
+            .unwrap();
+
+        let restored = extract_dir.join("data.bin");
+        assert_eq!(std::fs::read_to_string(restored).unwrap(), "gzip-payload");
+    }
+
+    #[test]
+    fn rar_pack_rejected() {
+        let archiver = get_archiver(ArchiveFormat::Rar).unwrap();
+        let err = archiver
+            .pack(&[], Path::new("/tmp/x.rar"), &PackOptions::default(), &mut |_| {})
+            .unwrap_err();
+        assert!(matches!(err, ArchiverError::UnsupportedOperation(_)));
     }
 }
