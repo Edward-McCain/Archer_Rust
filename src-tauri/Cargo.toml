@@ -1,0 +1,21 @@
+[package]
+name = "archer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Native macOS archive manager powered by Rust + Tauri"
+
+[lib]
+name = "archer_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+archiver_core = { path = "../archiver-core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { workspace = true }
+serde_json = { workspace = true }

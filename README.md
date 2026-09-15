@@ -24,20 +24,11 @@ drag & drop, прогресс, просмотр содержимого, паро
 .
 ├── Cargo.toml              # Cargo workspace
 ├── archiver-core/          # Чистая Rust-библиотека архивации
-│   ├── Cargo.toml
-│   └── src/
-│       ├── lib.rs
-│       ├── error.rs
-│       ├── format.rs
-│       ├── types.rs
-│       └── handlers/
-│           ├── mod.rs
-│           ├── zip_handler.rs
-│           └── tar_handler.rs
-├── src-tauri/              # Tauri backend (этап 2+)
-├── src/                    # Frontend UI (этап 2+)
-├── package.json            # Frontend deps (этап 2+)
-└── task.md                 # ТЗ
+├── src-tauri/              # Tauri backend + commands
+├── src/                    # React + TypeScript UI
+├── package.json
+├── vite.config.ts
+└── task.md
 ```
 
 ## Форматы
@@ -54,18 +45,20 @@ drag & drop, прогресс, просмотр содержимого, паро
 
 ## Этапы разработки
 
-1. **Структура workspace + ядро (ZIP/TAR)** — текущий
-2. Scaffold Tauri 2 + связка с `archiver-core`
+1. ~~Структура workspace + ядро (ZIP/TAR)~~
+2. ~~Scaffold Tauri 2 + связка с `archiver-core`~~ — текущий
 3. Доработка core: 7Z, RAR, single compress
 4. Tauri-команды, progress events, ошибки
 5. UI: DnD, список файлов, прогресс, темы
 6. История, уведомления, упаковка `.app` / `.dmg`
 
-## Быстрый старт (core)
+## Быстрый старт
 
 ```bash
-# Требуется Rust (rustup)
+# Rust (rustup) + Node.js
+npm install
 cargo test -p archiver_core
+npm run tauri dev
 ```
 
 ## Лицензия
