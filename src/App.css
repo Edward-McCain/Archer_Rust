@@ -306,3 +306,45 @@ select {
   font-size: 13px;
   line-height: 1.45;
 }
+
+.history {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.history-head h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.history-list {
+  max-height: 220px;
+}
+
+.history-list li {
+  padding: 0;
+}
+
+.history-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.history-item:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}

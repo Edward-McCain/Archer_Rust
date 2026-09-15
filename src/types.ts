@@ -31,3 +31,12 @@ export type ArchiveProgress =
   | { type: "finished" };
 
 export type Mode = "unpack" | "pack";
+
+export type HistoryItem = {
+  id: string;
+  kind: "pack" | "unpack";
+  path: string;
+  secondary?: string | null;
+  format?: string | null;
+  timestamp: number;
+};

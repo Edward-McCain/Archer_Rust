@@ -2,10 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification,
+} from "@tauri-apps/plugin-notification";
+import {
+  clearHistory,
   detectFormat,
+  getHistory,
   listArchive,
   listFormats,
   packArchive,
+  pushHistory,
   unpackArchive,
 } from "./api";
 import type {
@@ -13,6 +21,7 @@ import type {
   CompressionLevel,
   FormatId,
   FormatInfo,
+  HistoryItem,
   Mode,
 } from "./types";
 
@@ -25,6 +34,21 @@ function formatBytes(n: number) {
 
 function basename(path: string) {
   return path.split(/[/\\]/).pop() ?? path;
+}
+
+async function notify(title: string, body: string) {
+  try {
+    let granted = await isPermissionGranted();
+    if (!granted) {
+      const permission = await requestPermission();
+      granted = permission === "granted";
+    }
+    if (granted) {
+      sendNotification({ title, body });
+    }
+  } catch {
+    // Notifications are best-effort on first run / unsigned builds.
+  }
 }
 
 export default function App() {
@@ -47,6 +71,7 @@ export default function App() {
   const [progressLabel, setProgressLabel] = useState("");
   const [status, setStatus] = useState("Drop an archive or files to begin");
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
   const packableFormats = useMemo(
     () => formats.filter((f) => f.supportsPacking),
@@ -57,6 +82,9 @@ export default function App() {
     listFormats()
       .then(setFormats)
       .catch((err) => setError(String(err)));
+    getHistory()
+      .then(setHistory)
+      .catch(() => setHistory([]));
   }, []);
 
   useEffect(() => {
@@ -155,6 +183,16 @@ export default function App() {
         },
       });
       setStatus(`Extracted to ${dest}`);
+      const item: HistoryItem = {
+        id: `${Date.now()}-unpack`,
+        kind: "unpack",
+        path: archivePath,
+        secondary: dest,
+        format: archiveFormat?.displayName ?? null,
+        timestamp: Date.now(),
+      };
+      setHistory(await pushHistory(item));
+      await notify("Archer", `Extracted ${basename(archivePath)}`);
     } catch (err) {
       setError(String(err));
       setStatus("Unpack failed");
@@ -208,6 +246,16 @@ export default function App() {
         },
       });
       setStatus(`Created ${dest}`);
+      const item: HistoryItem = {
+        id: `${Date.now()}-pack`,
+        kind: "pack",
+        path: dest,
+        secondary: sources[0] ?? null,
+        format: packFormat,
+        timestamp: Date.now(),
+      };
+      setHistory(await pushHistory(item));
+      await notify("Archer", `Created ${basename(dest)}`);
     } catch (err) {
       setError(String(err));
       setStatus("Pack failed");
@@ -398,6 +446,55 @@ export default function App() {
                 }
               />
             </div>
+          </div>
+
+          <div className="history">
+            <div className="history-head">
+              <h3>Recent</h3>
+              <button
+                className="ghost-btn"
+                disabled={history.length === 0}
+                onClick={async () => {
+                  await clearHistory();
+                  setHistory([]);
+                }}
+              >
+                Clear
+              </button>
+            </div>
+            <ul className="file-list history-list">
+              {history.length === 0 ? (
+                <li>
+                  <span className="path">No recent operations</span>
+                  <span className="size">—</span>
+                </li>
+              ) : (
+                history.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      className="history-item"
+                      onClick={() => {
+                        if (item.kind === "unpack") {
+                          setMode("unpack");
+                          void handlePaths([item.path]);
+                        } else {
+                          setMode("pack");
+                          setStatus(`Last created: ${basename(item.path)}`);
+                        }
+                      }}
+                    >
+                      <span className="path" title={item.path}>
+                        {item.kind === "unpack" ? "Unpack" : "Create"} ·{" "}
+                        {basename(item.path)}
+                      </span>
+                      <span className="size">
+                        {new Date(item.timestamp).toLocaleString()}
+                      </span>
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
           </div>
         </aside>
       </main>

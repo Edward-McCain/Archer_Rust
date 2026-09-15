@@ -5,6 +5,7 @@ import type {
   CompressionLevel,
   FormatId,
   FormatInfo,
+  HistoryItem,
 } from "./types";
 
 export function listFormats() {
@@ -58,4 +59,16 @@ export async function unpackArchive(args: {
     overwrite: args.overwrite ?? true,
     onEvent,
   });
+}
+
+export function getHistory() {
+  return invoke<HistoryItem[]>("get_history");
+}
+
+export function pushHistory(item: HistoryItem) {
+  return invoke<HistoryItem[]>("push_history", { item });
+}
+
+export function clearHistory() {
+  return invoke<void>("clear_history");
 }
