@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { open, save } from "@tauri-apps/plugin-dialog";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
@@ -389,10 +390,6 @@ export default function App() {
             </div>
             <div className="progress-label">{progressLabel}</div>
           </div>
-
-          <p className={`status ${error ? "error" : ""}`}>
-            {error ?? status}
-          </p>
         </section>
 
         <aside className="panel">
@@ -513,6 +510,24 @@ export default function App() {
           </div>
         </aside>
       </main>
+
+      <footer className="statusbar">
+        <span className={`status-line ${error ? "error" : ""}`}>
+          {error ?? status}
+        </span>
+        <span className="author">
+          by{" "}
+          <button
+            type="button"
+            className="author-link"
+            onClick={() => {
+              void openUrl("https://github.com/Edward-McCain");
+            }}
+          >
+            Edward McCain
+          </button>
+        </span>
+      </footer>
     </div>
   );
 }

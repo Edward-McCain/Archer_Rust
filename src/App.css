@@ -72,7 +72,7 @@ select {
 .app {
   height: 100%;
   display: grid;
-  grid-template-rows: 56px 1fr;
+  grid-template-rows: 56px 1fr auto;
 }
 
 .titlebar {
@@ -406,6 +406,53 @@ select {
 
 .status.error {
   color: var(--danger);
+}
+
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+  padding: 6px 16px 10px;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  backdrop-filter: blur(12px);
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.status-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 550;
+}
+
+.status-line.error {
+  color: var(--danger);
+}
+
+.author {
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.author-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.author-link:hover {
+  color: color-mix(in srgb, var(--accent) 80%, var(--coral));
 }
 
 .sidebar-note {
