@@ -2,7 +2,8 @@ use std::path::PathBuf;
 
 /// Уровень сжатия — единая шкала для всех форматов, каждый обработчик
 /// сам мапит её на свои внутренние значения (0-9 для deflate, 0-9 для xz и т.д.)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum CompressionLevel {
     Fast,
     Balanced,
@@ -19,20 +20,23 @@ impl CompressionLevel {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PackOptions {
     pub level: Option<CompressionLevel>,
     pub password: Option<String>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UnpackOptions {
     pub password: Option<String>,
     /// Если true — существующие файлы в целевой папке перезаписываются.
     pub overwrite: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ArchiveEntry {
     pub path: String,
     pub size_bytes: u64,
@@ -40,10 +44,13 @@ pub struct ArchiveEntry {
 }
 
 /// События прогресса, которые ядро шлёт наверх (в Tauri-обвязке
-/// транслируются в `window.emit("archive-progress", ev)`).
-#[derive(Debug, Clone)]
+/// транслируются в Channel / `window.emit("archive-progress", ev)`).
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum ProgressEvent {
+    #[serde(rename_all = "camelCase")]
     Started { total_entries: Option<u64> },
+    #[serde(rename_all = "camelCase")]
     Entry { path: PathBuf, index: u64 },
     Finished,
 }

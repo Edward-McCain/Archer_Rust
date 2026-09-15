@@ -3,7 +3,8 @@ use std::io::Read;
 use std::path::Path;
 
 /// Поддерживаемые форматы архивов.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum ArchiveFormat {
     Zip,
     Tar,

@@ -1,24 +1,24 @@
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use archiver_core::ArchiveFormat;
+mod commands;
+mod error;
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {name}! Archer core is wired in.")
-}
-
-/// Smoke-test command: detect archive format from a path string.
-#[tauri::command]
-fn detect_format(path: String) -> Result<String, String> {
-    let format = ArchiveFormat::from_extension(std::path::Path::new(&path))
-        .ok_or_else(|| "Unknown or unsupported archive format".to_string())?;
-    Ok(format.display_name().to_string())
-}
+use commands::{
+    detect_format, extract_entries, list_archive, list_formats, pack_archive, unpack_archive,
+};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, detect_format])
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
+        .invoke_handler(tauri::generate_handler![
+            list_formats,
+            detect_format,
+            list_archive,
+            pack_archive,
+            unpack_archive,
+            extract_entries,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

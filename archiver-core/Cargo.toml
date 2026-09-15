@@ -29,6 +29,7 @@ unrar = "0.5"
 # Общие утилиты
 thiserror = { workspace = true }
 walkdir = { workspace = true }
+serde = { workspace = true }
 
 [dev-dependencies]
 tempfile = "3.10"

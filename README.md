@@ -47,8 +47,8 @@ drag & drop, прогресс, просмотр содержимого, паро
 
 1. ~~Структура workspace + ядро (ZIP/TAR)~~
 2. ~~Scaffold Tauri 2 + связка с `archiver-core`~~
-3. ~~Доработка core: 7Z, RAR, single compress~~ — текущий
-4. Tauri-команды, progress events, ошибки
+3. ~~Доработка core: 7Z, RAR, single compress~~
+4. ~~Tauri-команды, progress events, ошибки~~ — текущий
 5. UI: DnD, список файлов, прогресс, темы
 6. История, уведомления, упаковка `.app` / `.dmg`
 
