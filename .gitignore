@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Rust
+target/
+**/*.rs.bk
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm
+.vite/
+
+# Tauri / IDE
+src-tauri/target/
+.idea/
+.vscode/
+*.swp
+*.swo
+.fleet/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs & temp
+*.log
+tmp/
+temp/
+*.tmp
+
+# Graphify / agent artifacts
+graphify-out/
