@@ -2,7 +2,9 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-Icon?
+# Finder folder custom-icon file (literal "Icon" + CR); keep off `icons/` dirs
+**/Icon
+
 
 # Rust
 target/
