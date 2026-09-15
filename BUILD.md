@@ -13,7 +13,7 @@ Artifacts land in:
 
 ```text
 src-tauri/target/release/bundle/macos/Archer.app
-src-tauri/target/release/bundle/dmg/Archer_0.1.0_*.dmg
+src-tauri/target/release/bundle/dmg/Archer_0.1.0_*.dmg 
 ```
 
 ## Notes

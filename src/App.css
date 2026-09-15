@@ -1,34 +1,42 @@
 :root {
   color-scheme: light dark;
-  --bg: #f3f1ec;
-  --bg-elevated: #fffdf8;
-  --bg-muted: #e8e4db;
-  --ink: #1c1a16;
-  --ink-muted: #5f5a50;
-  --line: #d5cfc2;
-  --accent: #0f6e56;
-  --accent-ink: #f4fff9;
-  --danger: #a33b2b;
-  --drop-glow: rgba(15, 110, 86, 0.18);
-  --shadow: 0 18px 40px rgba(28, 26, 22, 0.08);
-  --radius: 18px;
-  --font: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
-  --mono: "SF Mono", "Menlo", "Consolas", monospace;
+  --blue: #4f7cf5;
+  --amber: #f0a73a;
+  --coral: #ef5f74;
+  --bg: #f6f4ef;
+  --bg-elevated: #fffcf7;
+  --bg-muted: #ebe6db;
+  --ink: #1a2333;
+  --ink-muted: #5c6678;
+  --line: #d9d2c4;
+  --accent: var(--blue);
+  --accent-soft: color-mix(in srgb, var(--blue) 14%, transparent);
+  --accent-ink: #f7faff;
+  --danger: #c23b4a;
+  --glow-a: color-mix(in srgb, var(--blue) 22%, transparent);
+  --glow-b: color-mix(in srgb, var(--coral) 14%, transparent);
+  --shadow: 0 20px 48px rgba(26, 35, 51, 0.08);
+  --radius: 22px;
+  --font: "Manrope", "Avenir Next", sans-serif;
+  --display: "Fraunces", "Iowan Old Style", serif;
+  --mono: "IBM Plex Mono", "SF Mono", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #171512;
-    --bg-elevated: #221f1a;
-    --bg-muted: #2c2822;
-    --ink: #f4efe6;
-    --ink-muted: #b3aa9a;
-    --line: #3a342c;
-    --accent: #3ecf9c;
-    --accent-ink: #06261c;
-    --danger: #ff8d7a;
-    --drop-glow: rgba(62, 207, 156, 0.16);
-    --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    --bg: #12151c;
+    --bg-elevated: #1a1f2a;
+    --bg-muted: #242b39;
+    --ink: #eef2f8;
+    --ink-muted: #9aa6bb;
+    --line: #323a4b;
+    --accent: #6b93ff;
+    --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+    --accent-ink: #0b1220;
+    --danger: #ff8b98;
+    --glow-a: color-mix(in srgb, var(--accent) 18%, transparent);
+    --glow-b: color-mix(in srgb, var(--coral) 12%, transparent);
+    --shadow: 0 24px 56px rgba(0, 0, 0, 0.42);
   }
 }
 
@@ -41,15 +49,18 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
+  height: 100%;
 }
 
 body {
   font-family: var(--font);
   color: var(--ink);
   background:
-    radial-gradient(1200px 500px at 10% -10%, var(--drop-glow), transparent 60%),
-    linear-gradient(180deg, var(--bg-elevated), var(--bg));
+    radial-gradient(900px 420px at 0% -10%, var(--glow-a), transparent 55%),
+    radial-gradient(700px 380px at 100% 0%, var(--glow-b), transparent 50%),
+    linear-gradient(165deg, var(--bg-elevated), var(--bg));
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
 }
 
 button,
@@ -59,53 +70,108 @@ select {
 }
 
 .app {
-  min-height: 100vh;
+  height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 56px 1fr;
 }
 
 .titlebar {
-  height: 52px;
+  position: relative;
+  z-index: 20;
+  height: 56px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px 0 86px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg-elevated) 78%, transparent);
+  backdrop-filter: saturate(1.2) blur(18px);
+  -webkit-app-region: drag;
+  app-region: drag;
+  user-select: none;
+  cursor: default;
+}
+
+.titlebar * {
+  -webkit-app-region: inherit;
+}
+
+.titlebar .brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 18px 0 88px;
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
-  -webkit-app-region: drag;
+  gap: 10px;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.titlebar .brand-mark {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(26, 35, 51, 0.18));
 }
 
 .titlebar h1 {
   margin: 0;
-  font-size: 15px;
+  font-family: var(--display);
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .titlebar .modes {
   display: flex;
   gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--bg-muted);
+  border: 1px solid var(--line);
   -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .mode-btn,
 .action-btn,
 .ghost-btn {
-  border: 1px solid var(--line);
-  background: var(--bg-elevated);
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--ink);
   border-radius: 999px;
   padding: 8px 14px;
   cursor: pointer;
-  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.mode-btn.active,
+.mode-btn {
+  min-width: 88px;
+  color: var(--ink-muted);
+}
+
+.mode-btn.active {
+  background: var(--bg-elevated);
+  color: var(--ink);
+  box-shadow: 0 6px 16px rgba(26, 35, 51, 0.08);
+}
+
 .action-btn.primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--coral)));
   color: var(--accent-ink);
   border-color: transparent;
+  box-shadow: 0 10px 24px var(--accent-soft);
+}
+
+.ghost-btn {
+  border-color: var(--line);
+  background: var(--bg-elevated);
 }
 
 .mode-btn:hover,
@@ -117,16 +183,19 @@ select {
 .mode-btn:disabled,
 .action-btn:disabled,
 .ghost-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .content {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 18px;
-  padding: 18px;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+  padding: 16px;
+  min-height: 0;
+  overflow: auto;
 }
 
 @media (max-width: 900px) {
@@ -136,7 +205,7 @@ select {
 }
 
 .panel {
-  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -147,34 +216,50 @@ select {
   min-height: 0;
 }
 
+.panel h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
 .dropzone {
   position: relative;
-  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
-  border-radius: calc(var(--radius) - 4px);
-  min-height: 180px;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 42%, var(--line));
+  border-radius: calc(var(--radius) - 6px);
+  min-height: 168px;
   display: grid;
   place-items: center;
   text-align: center;
-  padding: 24px;
-  background: color-mix(in srgb, var(--bg-muted) 55%, transparent);
-  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  padding: 28px 20px;
+  background:
+    linear-gradient(180deg, var(--accent-soft), transparent 70%),
+    color-mix(in srgb, var(--bg-muted) 70%, transparent);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .dropzone.active {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg-elevated));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .dropzone h2 {
-  margin: 0 0 6px;
-  font-size: 20px;
+  margin: 0 0 8px;
+  font-size: 24px;
 }
 
 .dropzone p {
   margin: 0;
   color: var(--ink-muted);
-  max-width: 34ch;
+  max-width: 36ch;
+  line-height: 1.45;
+  font-weight: 500;
 }
 
 .meta {
@@ -188,11 +273,17 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 6px 11px;
   border-radius: 999px;
   background: var(--bg-muted);
   color: var(--ink-muted);
   font-size: 12px;
+  font-weight: 650;
+}
+
+.chip.accent {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .field-grid {
@@ -212,7 +303,10 @@ select {
 }
 
 .field label {
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--ink-muted);
 }
 
@@ -221,8 +315,16 @@ select {
   border: 1px solid var(--line);
   background: var(--bg);
   color: var(--ink);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 14px;
+  padding: 11px 12px;
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .actions {
@@ -236,16 +338,17 @@ select {
   margin: 0;
   padding: 0;
   overflow: auto;
-  max-height: 280px;
+  max-height: 260px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
 }
 
 .file-list li {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-bottom: 1px solid var(--line);
   font-size: 13px;
 }
@@ -256,6 +359,7 @@ select {
 
 .file-list .path {
   font-family: var(--mono);
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -264,6 +368,7 @@ select {
 .file-list .size {
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 .progress-wrap {
@@ -272,7 +377,7 @@ select {
 }
 
 .progress-track {
-  height: 10px;
+  height: 9px;
   border-radius: 999px;
   background: var(--bg-muted);
   overflow: hidden;
@@ -281,7 +386,8 @@ select {
 .progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 60%, white));
+  background: linear-gradient(90deg, var(--blue), var(--amber), var(--coral));
+  background-size: 200% 100%;
   transition: width 180ms ease;
 }
 
@@ -289,11 +395,13 @@ select {
   font-size: 12px;
   color: var(--ink-muted);
   min-height: 1.2em;
+  font-family: var(--mono);
 }
 
 .status {
   font-size: 13px;
   color: var(--ink-muted);
+  font-weight: 550;
 }
 
 .status.error {
@@ -304,13 +412,14 @@ select {
   margin: 0;
   color: var(--ink-muted);
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .history {
   display: grid;
   gap: 10px;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .history-head {
@@ -321,11 +430,13 @@ select {
 
 .history-head h3 {
   margin: 0;
-  font-size: 15px;
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: -0.02em;
 }
 
 .history-list {
-  max-height: 220px;
+  max-height: 210px;
 }
 
 .history-list li {
@@ -346,5 +457,5 @@ select {
 }
 
 .history-item:hover {
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  background: var(--accent-soft);
 }

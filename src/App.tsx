@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   isPermissionGranted,
   requestPermission,
@@ -24,6 +25,7 @@ import type {
   HistoryItem,
   Mode,
 } from "./types";
+import brandMark from "./assets/folders.png";
 
 function formatBytes(n: number) {
   if (n < 1024) return `${n} B`;
@@ -274,9 +276,22 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="titlebar" data-tauri-drag-region>
-        <h1>Archer</h1>
-        <div className="modes">
+      <header
+        className="titlebar"
+        data-tauri-drag-region
+        onMouseDown={(event) => {
+          if (event.button !== 0) return;
+          const target = event.target as HTMLElement;
+          if (target.closest("[data-no-drag]")) return;
+          event.preventDefault();
+          void getCurrentWindow().startDragging();
+        }}
+      >
+        <div className="brand" data-tauri-drag-region>
+          <img className="brand-mark" src={brandMark} alt="" draggable={false} />
+          <h1 data-tauri-drag-region>Archer</h1>
+        </div>
+        <div className="modes" data-no-drag>
           <button
             className={`mode-btn ${mode === "unpack" ? "active" : ""}`}
             onClick={() => {
@@ -340,7 +355,7 @@ export default function App() {
 
           <div className="meta">
             {archiveFormat && (
-              <span className="chip">{archiveFormat.displayName}</span>
+              <span className="chip accent">{archiveFormat.displayName}</span>
             )}
             {archivePath && (
               <span className="chip">{basename(archivePath)}</span>
@@ -381,10 +396,10 @@ export default function App() {
         </section>
 
         <aside className="panel">
-          <h2 style={{ margin: 0, fontSize: 18 }}>Options</h2>
+          <h2>Options</h2>
           <p className="sidebar-note">
-            Light and dark follow your macOS appearance. Heavy work runs off the
-            UI thread; progress streams live from Rust.
+            Theme follows macOS. Progress streams from Rust while the UI stays
+            responsive.
           </p>
 
           <div className="field-grid">
